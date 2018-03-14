@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "2.2",
+  "description": "GitHub Test Document",
+  "mainSteps": [
+    {
+      "action": "aws:runPowerShellScript",
+      "name": "CustomPowerShellScript",
+      "precondition": {
+        "StringEquals": [
+          "platformType",
+          "Windows"
+        ]
+      },
+      "inputs": {
+        "TimeoutSeconds": 300,
+        "runCommand": [
+			  "$log = @()",
+			  "try {",
+              "    $log += ('Start')",
+			  "    $result = Get-WmiObject -Class Win32_LogicalDisk ",
+			  "    Write-Output $result",
+			  "    $log += ('Getting instance Id from metadata')",
+			  "    $instanceId = (Invoke-RestMethod -Method Get -Uri http://169.254.169.254/latest/meta-data/instance-id)",
+			  "    $log += ('SSM custom Inventory path')",
+			  "    $log += ('End')",
+			  "    Write-Output $log",
+			  "    }",
+			  "catch [Exception]{",
+			  "    $msg = \"Exception thrown {0}`r`nDetails:`r`n{1}\", $_.Exception.Message, $log",
+              "    Write-Error $msg",
+			  "    exit -1",
+			  "}"
+        ]
+      }
+    }
+  ]
+}
