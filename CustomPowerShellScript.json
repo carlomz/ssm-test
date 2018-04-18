@@ -16,8 +16,9 @@
         "runCommand": [
 			  "$log = @()",
 			  "try {",
-              "    $log += ('Start')",
+              		  "    $log += \"Start\"",
 			  "    $result = Get-WmiObject -Class Win32_LogicalDisk ",
+		          "    $log += \"Get Logical Disk Details:\"",
 			  "    Write-Output $result",
 			  "    $log += \"Getting instance Id from metadata\"",
 			  "    $instanceId = (Invoke-RestMethod -Method Get -Uri http://169.254.169.254/latest/meta-data/instance-id)",
