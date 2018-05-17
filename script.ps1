@@ -69,8 +69,6 @@ function Put-CloudWatchCustom() {
 
     $CloudWatchTempConfig = $env:Temp + '\CWAgent.json'
     $Custom | Set-Content $CloudWatchTempConfig
-    Write-Host $env:AWS_SSM_INSTANCE_ID
-    Write-Host "Ebd"
     
     
     if ($Mode -eq 'ssm') {
@@ -129,7 +127,8 @@ function Main() {
     $CloudWatchTemplate = Get-CloudWatchTemplate -Mode $Mode -Base $true -BucketName $BucketName
     $CloudWatchCustom = Create-CloudWatchCustom -Template $CloudWatchTemplate
     $Config = Put-CloudWatchCustom -Mode $Mode -Custom $CloudWatchCustom -BucketName $BucketName
-    Configure-CloudWatch -Mode $Mode -Config "$Config"
+    Write-Host "Debug $Config"
+    Configure-CloudWatch -Mode $Mode -Config $Config
     Write-Output "Success"
 }
 
