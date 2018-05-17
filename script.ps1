@@ -67,10 +67,6 @@ function Put-CloudWatchCustom() {
     [string]$BucketName
     )
 
-    $BucketName = 'aws-test-case'
-    $Mode = 's3'
-    $Custom = (Get-SSMParameter -Name "/Config/CloudWatchAgent/Base/Windows").Value
-
     $CloudWatchTempConfig = $env:Temp + '\CWAgent.json'
     $Custom | Set-Content $CloudWatchTempConfig
     
