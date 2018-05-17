@@ -43,7 +43,6 @@ function Get-CloudWatchTemplate() {
         }
     }
 
-
     return $CloudWatchSSMConfig
 }
 
@@ -70,10 +69,13 @@ function Put-CloudWatchCustom() {
 
     $CloudWatchTempConfig = $env:Temp + '\CWAgent.json'
     $Custom | Set-Content $CloudWatchTempConfig
+    Write-Host $env:AWS_SSM_INSTANCE_ID
+    Write-Host "Ebd"
+    
     
     if ($Mode -eq 'ssm') {
         Write-SSMParameter -Name "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID" -Value "$custom" -Type String -Overwrite $true -Region $env:AWS_SSM_REGION_NAME 
-        $CloudWatchTempConfig = "/Config/CloudWatchAgent/Prod/${$env:AWS_SSM_INSTANCE_ID}"
+        $CloudWatchTempConfig = "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID"
 	Write-Host "Success: Put custom CloudWatch configuration template to Parameter Store -Name: $CloudWatchTempConfig"
     } else {
         Write-S3Object -BucketName $BucketName -Key "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID.amazon-cloudwatch-agent.json" -File $CloudWatchTempConfig -Region $env:AWS_SSM_REGION_NAME
