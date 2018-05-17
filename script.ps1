@@ -1,9 +1,9 @@
-try { 
-	Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process 
-} catch { 
-	Write-Host 'Unable to set the desired execution policy. Desired: Bypass (Scope: Process), Current:' (Get-ExecutionPolicy) 
-}
-
+<# Set global variables #>
+param (
+	[string]$Mode,
+	[string]$BucketName
+);
+  
 #
 # Helper function to Import Module AWSPowershell
 #
@@ -127,3 +127,5 @@ function Main() {
     $Config = Put-CloudWatchCustom -Mode $Mode -Custom $CloudWatchCustom -BucketName $BucketName
     Configure-CloudWatch -Mode $Mode -Config $Config
 }
+
+Main -Mode $Mode -BucketName $BucketName
