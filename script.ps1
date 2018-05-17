@@ -35,10 +35,10 @@ function Get-CloudWatchTemplate() {
     } else {
         if ($Mode -eq 'ssm') {
             $CloudWatchSSMConfig = (Get-SSMParameter -Name "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID"  -Region $env:AWS_SSM_REGION_NAME).Value
-			Write-Host 'Success: Get CloudWatch configuration template from Parameter Store -Name: /Config/CloudWatchAgent/Prod/${env:AWS_SSM_INSTANCE_ID}'
+	    Write-Host "Success: Get CloudWatch configuration template from Parameter Store -Name: /Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID}"
         } else {
             Read-S3Object -BucketName $BucketName -Key "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID.amazon-cloudwatch-agent.json" -File $CloudWatchTempConfig -Region $env:AWS_SSM_REGION_NAME
-			Write-Host 'Success: Get CloudWatch configuration template from S3 -Key: ${BucketName}/Config/CloudWatchAgent/Prod/{env:AWS_SSM_INSTANCE_ID}.amazon-cloudwatch-agent.json'
+	    Write-Host "Success: Get CloudWatch configuration template from S3 -Key: $BucketName/Config/CloudWatchAgent/Prod/${$env:AWS_SSM_INSTANCE_ID}.amazon-cloudwatch-agent.json"
             $CloudWatchSSMConfig = Get-Content $CloudWatchTempConfig
         }
     }
@@ -77,8 +77,10 @@ function Put-CloudWatchCustom() {
     if ($Mode -eq 'ssm') {
         Write-SSMParameter -Name "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID" -Value "$custom" -Type String -Overwrite $true -Region $env:AWS_SSM_REGION_NAME 
         $CloudWatchTempConfig = "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID"
+	Write-Host "Success: Put custom CloudWatch configuration template to Parameter Store -Name: /Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID"
     } else {
         Write-S3Object -BucketName $BucketName -Key "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID.amazon-cloudwatch-agent.json" -File $CloudWatchTempConfig -Region $env:AWS_SSM_REGION_NAME
+	Write-Host "Success: Put custom CloudWatch configuration template to S3 -Key: /Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID.amazon-cloudwatch-agent.json"
     }
 
     return $CloudWatchTempConfig
@@ -108,7 +110,7 @@ function Configure-CloudWatch() {
     }
 
     $Params += ('-c', "${Config}")
-    $Params += ('-a', 'fetch-config', '-m', 'auto', 's')
+    $Params += ('-a', 'fetch-config', '-m', 'auto', '-s')
     Invoke-Expression "& '${Cmd}' ${Params}"
 
 }
@@ -120,12 +122,15 @@ function Main() {
     [string]$BucketName
     )
     
-    Write-Output 'Executing Main(${Mode})'
+    Write-Output "Executing Main($Mode,$BucketName)"
     Import-Module-AWSPowershell
     $CloudWatchTemplate = Get-CloudWatchTemplate -Mode $Mode -Base $true -BucketName $BucketName
     $CloudWatchCustom = Create-CloudWatchCustom -Template $CloudWatchTemplate
     $Config = Put-CloudWatchCustom -Mode $Mode -Custom $CloudWatchCustom -BucketName $BucketName
     Configure-CloudWatch -Mode $Mode -Config $Config
+    Write-Output "Success"
 }
 
 Main -Mode $Mode -BucketName $BucketName
+Exit 0
+    
