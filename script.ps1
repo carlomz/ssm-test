@@ -127,7 +127,7 @@ function Main() {
     $CloudWatchTemplate = Get-CloudWatchTemplate -Mode $Mode -Base $true -BucketName $BucketName
     $CloudWatchCustom = Create-CloudWatchCustom -Template $CloudWatchTemplate
     $Config = Put-CloudWatchCustom -Mode $Mode -Custom "$CloudWatchCustom" -BucketName $BucketName
-    Configure-CloudWatch -Mode $Mode -Config $Config
+    Configure-CloudWatch -Mode $Mode -Config "$Config"
     Write-Output "Success"
 }
 
