@@ -54,6 +54,7 @@ function Create-CloudWatchCustom() {
     [string]$Template
     )
 
+    Write-Host "Sucess: Create-CloudWatchCustom() -> JSON"
     return $Template
 }
 
@@ -73,12 +74,13 @@ function Put-CloudWatchCustom() {
     if ($Mode -eq 'ssm') {
         Write-SSMParameter -Name "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID" -Value "$custom" -Type String -Overwrite $true -Region $env:AWS_SSM_REGION_NAME 
         $CloudWatchTempConfig = "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID"
-	Write-Host "Success: Put custom CloudWatch configuration template to Parameter Store -Name: /Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID"
+	Write-Host "Success: Put custom CloudWatch configuration template to Parameter Store -Name: $CloudWatchTempConfig"
     } else {
         Write-S3Object -BucketName $BucketName -Key "/Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID.amazon-cloudwatch-agent.json" -File $CloudWatchTempConfig -Region $env:AWS_SSM_REGION_NAME
 	Write-Host "Success: Put custom CloudWatch configuration template to S3 -Key: /Config/CloudWatchAgent/Prod/$env:AWS_SSM_INSTANCE_ID.amazon-cloudwatch-agent.json"
     }
 
+    Write-Host "Sucess: Put-CloudWatchCustom() -> $CloudWatchTempConfig"
     return $CloudWatchTempConfig
 }
 
@@ -105,6 +107,7 @@ function Configure-CloudWatch() {
         $Config = "file:$Config"
     }
 
+    Write-Host "Config: $Config"
     $Params += ('-c', "${Config}")
     $Params += ('-a', 'fetch-config', '-m', 'auto', '-s')
     Write-Host "Execute: amazon-cloudwatch-agent-ctl.ps1 $Params"
