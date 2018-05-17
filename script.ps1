@@ -119,7 +119,8 @@ function Main() {
     [string]$Mode,
     [string]$BucketName
     )
-
+    
+    Write-Output 'Executing Main(${Mode})'
     Import-Module-AWSPowershell
     $CloudWatchTemplate = Get-CloudWatchTemplate -Mode $Mode -Base $true -BucketName $BucketName
     $CloudWatchCustom = Create-CloudWatchCustom -Template $CloudWatchTemplate
