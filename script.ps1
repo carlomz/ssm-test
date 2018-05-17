@@ -111,6 +111,7 @@ function Configure-CloudWatch() {
 
     $Params += ('-c', "${Config}")
     $Params += ('-a', 'fetch-config', '-m', 'auto', '-s')
+    Write-Host "Execute: amazon-cloudwatch-agent-ctl.ps1 $Params"
     Invoke-Expression "& '${Cmd}' ${Params}"
 
 }
